@@ -171,57 +171,8 @@ void loop()
   throttleStatus = constrain(throttleStatus, 0, 255); // in case the user forgot calibration
   cmd[3] += throttleStatus;
 
-  if (false && sendChange) {
-    XBee.print("before: ");
-    XBee.print(button1status);
-    XBee.print(" ");
-    XBee.print(button1status);
-    XBee.print(" ");
-    XBee.print(button1status);
-    XBee.print(" ");
-    XBee.print(button1status);
-    XBee.print(" ");
-    XBee.print(buttons56status);
-    XBee.print(" ");
-    XBee.print(joy1Xstatus);
-    XBee.print(" ");
-    XBee.print(joy1Ystatus);
-    XBee.print(" ");
-    XBee.println(throttleStatus);
-  }
   if (sendChange) {
     XBee.write(cmd, 4);
-  }
-  if (false && sendChange) {
-    button1 = cmd[0] % 2;
-    button2 = (cmd[0] >> 1) % 2;
-    button3 = (cmd[0] >> 2) % 2;
-    button4 = (cmd[0] >> 3) % 2;
-    button5 = (cmd[0] >> 4) % 2;
-    button6 = (cmd[0] >> 5) % 2;
-    joy1X = cmd[1];
-    joy1Y = cmd[2];
-    throttle = cmd[3];
-    XBee.println("");
-    XBee.print("after: ");
-    XBee.print(button1);
-    XBee.print(" ");
-    XBee.print(button2);
-    XBee.print(" ");
-    XBee.print(button3);
-    XBee.print(" ");
-    XBee.print(button4);
-    XBee.print(" ");
-    XBee.print(button5);
-    XBee.print(" ");
-    XBee.print(button6);
-    XBee.print(" ");
-    XBee.print(joy1X);
-    XBee.print(" ");
-    XBee.print(joy1Y);
-    XBee.print(" ");
-    XBee.println(throttle);
-    XBee.println("");
   }
 
   cmd[0] = cmd[1] = cmd[2] = cmd[3] = 0;
