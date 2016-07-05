@@ -7,6 +7,9 @@
 // XBee's DIN (RX) is connected to pin 11 (Arduino's Software TX)
 SoftwareSerial XBee(10, 11); // RX, TX
 
+bool debug = true;
+char* lcdDebugLine = new char[16];
+
 Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 #define RED 0x1
 #define YELLOW 0x3
@@ -64,18 +67,18 @@ void setup()
 
   // set up the LCD's number of columns and rows: 
   lcd.begin(16, 2);
-
-  lcd.setBacklight(GREEN);
-  lcd.setCursor(0, 0);
-  lcd.print("Calibration");
 }
 
 void loop()
 {
   // calibration of joystick axes
   while (millis() <= 1000) {
+    lcd.setBacklight(TEAL);
+    lcd.setCursor(0, 0);
+    lcd.print("Reading defaults");
     lcd.setCursor(0, 1);
     lcd.print(millis() / 1000);
+
     joy1Xstatus_mid = analogRead(joy1Xpin);
     joy1Xstatus_min = joy1Xstatus_max = joy1Xstatus_min;
     joy1Ystatus_mid = analogRead(joy1Ypin);
@@ -85,6 +88,10 @@ void loop()
     throttleStatus_min = throttleStatus_max = throttleStatus_old;
   }
   while (millis() > 1000 && millis() <= 10000) {
+    lcd.setBacklight(TEAL);
+    lcd.setCursor(0, 0);
+    lcd.print("Please move axes");
+
     lcd.setCursor(0, 1);
     lcd.print(millis() / 1000);
     tmp = analogRead(joy1Xpin);
@@ -105,12 +112,13 @@ void loop()
     if (tmp < throttleStatus_min)
       throttleStatus_min = tmp;
   }
-
-  if (millis() > 10000) {
+  
+  /*if (millis() > 10000) {
+    lcd.clear();
     lcd.setBacklight(TEAL);
     lcd.setCursor(0, 0);
     lcd.print("Start Playing");
-  }
+  }*/
 
   button1status = digitalRead(button1pin);
   button2status = digitalRead(button2pin);
@@ -175,8 +183,18 @@ void loop()
     XBee.write(cmd, 4);
   }
 
+  if (debug) {
+    lcd.clear();
+    // let's do the backward computation, just to see that things are working
+    sprintf(lcdDebugLine, "A%dB%dC%dD%dR1%dR2%d", cmd[0] & 1, (cmd[0] & 2) >> 1, (cmd[0] & 4) >> 2, (cmd[0] & 8) >> 3,
+                                                  (cmd[0] & 16) >> 4, (cmd[0] & 32) >> 5);
+
+    lcd.setCursor(0, 0);
+    lcd.print(lcdDebugLine);
+  }
+
   cmd[0] = cmd[1] = cmd[2] = cmd[3] = 0;
   sendChange = false;
-  delay(10);
+  delay(100);
 }
 
